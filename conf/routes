@@ -3,7 +3,8 @@
 # ~~~~
 
 
-GET     /user                       controllers.HomeController.insert(name: String, pass: String, admin: Boolean)
+#GET     /user                       controllers.HomeController.insert(name: String, pass: String, admin: Boolean)
+POST     /user                       controllers.HomeController.insert
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index
 # An example controller showing how to use dependency injection
