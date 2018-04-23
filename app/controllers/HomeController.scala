@@ -27,7 +27,7 @@ class HomeController @Inject()(db: DBAccess) extends Controller {
     * a path of `/`.
     */
   def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+    Ok("Hello~ hello~")
   }
 
   //  def insert(name: String, pass: String, admin: Boolean) = Action {
