@@ -1,7 +1,7 @@
 package controllers
 
 import javax.inject._
-import models.DBAccess
+//import models.DBAccess
 
 import play.api.mvc._
 import play.api.libs.json._
@@ -12,7 +12,8 @@ import play.api.libs.functional.syntax._
   * application's home page.
   */
 @Singleton
-class HomeController @Inject()(db: DBAccess) extends Controller {
+//class HomeController @Inject()(db: DBAccess) extends Controller {
+class HomeController @Inject() extends Controller {
 
   implicit val rds: Reads[(String, String, Boolean)] = (
     (__ \ 'name).read[String] and
@@ -31,17 +32,17 @@ class HomeController @Inject()(db: DBAccess) extends Controller {
   }
 
   //  def insert(name: String, pass: String, admin: Boolean) = Action {
-  def insert = Action { request =>
-    request.body.asJson.map { json =>
-      json.validate[(String, String, Boolean)].map{
-        case (name, password, admin) =>
-          db.insert(name, password, admin)
-          Ok("Hello " + name)
-      }.recoverTotal{
-        e => BadRequest("Detected error:"+ JsError.toFlatJson(e))
-      }
-    }.getOrElse {
-      BadRequest("Expecting Json data")
-    }
-  }
+//  def insert = Action { request =>
+//    request.body.asJson.map { json =>
+//      json.validate[(String, String, Boolean)].map{
+//        case (name, password, admin) =>
+//          db.insert(name, password, admin)
+//          Ok("Hello " + name)
+//      }.recoverTotal{
+//        e => BadRequest("Detected error:"+ JsError.toFlatJson(e))
+//      }
+//    }.getOrElse {
+//      BadRequest("Expecting Json data")
+//    }
+//  }
 }

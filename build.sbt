@@ -11,7 +11,7 @@ libraryDependencies ++= Seq(
   cache,
   ws,
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test ,
-  "mysql" % "mysql-connector-java" % "5.1.35",
+//  "mysql" % "mysql-connector-java" % "5.1.35",
   "com.typesafe.play" %% "anorm" % "2.5.2"
 )
 
