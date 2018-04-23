@@ -1,4 +1,4 @@
-name := """kies-attendance-server"""
+name := """kies-attendance"""
 
 version := "1.0-SNAPSHOT"
 
