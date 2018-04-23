@@ -12,7 +12,7 @@ import anorm.SqlParser._
 class DBAccess @Inject()(db: Database) {
   def insert(name: String, password: String, admin: Boolean) = {
     db.withConnection { implicit c =>
-      SQL(s"insert into user(name, password, admin) values('$name', '$password', $admin)").executeInsert()
+      SQL(s"insert into users(name, password, admin) values('$name', '$password', $admin)").executeInsert()
     }
 //    val conn = DB.getConnection()
 //    try {
