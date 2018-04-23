@@ -4,7 +4,7 @@
 
 
 #GET     /user                       controllers.HomeController.insert(name: String, pass: String, admin: Boolean)
-#POST     /user                       controllers.HomeController.insert
+POST     /user                       controllers.HomeController.insert
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index
 
