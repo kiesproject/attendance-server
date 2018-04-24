@@ -14,8 +14,8 @@ import play.api.libs.functional.syntax._
   */
 @Singleton
 class HomeController @Inject()(db: DBAccess) extends Controller {
-//class HomeController @Inject() extends Controller {
 
+  // POSTのbodyをパースする用
   implicit val rds: Reads[(String, String, Boolean)] = (
     (__ \ 'name).read[String] and
     (__ \ 'password).read[String] and
@@ -32,7 +32,9 @@ class HomeController @Inject()(db: DBAccess) extends Controller {
     Ok("Hello~ hello~")
   }
 
-  def insert = Action { request =>
+  // user登録
+  // TODO: nameの重複チェックをして，重複していなかったら登録する，それ以外はエラーを返す
+  def register = Action { request =>
     request.body.asJson.map { json =>
       json.validate[(String, String, Boolean)].map{
         case (name, password, admin) =>
@@ -44,6 +46,30 @@ class HomeController @Inject()(db: DBAccess) extends Controller {
     }.getOrElse {
       BadRequest("Expecting Json data")
     }
+  }
+
+  // userログイン
+  def login = Action { request =>
+    /*bodyからnameを取得
+    * nameがDBにあるか調べる
+    * あるならログインする
+    * ないならログインできない，エラーを返す*/
+    request.body.asJson.map { json =>
+      json.validate[(String, String, Boolean)].map{
+        case (name, password, admin) =>
+          if (db.exists(name, password)) {
+            Ok(s"login $name")
+          } else {
+            BadRequest("email or password is wrong")
+          }
+
+      }.recoverTotal{
+        e => BadRequest("Detected error:"+ JsError.toFlatJson(e))
+      }
+    }.getOrElse {
+      BadRequest("Expecting Json data")
+    }
+    ???
   }
 
   //  def insert(name: String, pass: String, admin: Boolean) = Action {
