@@ -3,6 +3,7 @@ package models
 import javax.inject._
 import play.api.db._
 import anorm._
+import anorm.SqlParser.scalar
 
 // FIXME: SQL injection 対策する
 @Singleton
@@ -14,15 +15,24 @@ class DBAccess @Inject()(db: Database) {
     }
   }
 
-  def exists(name: String, password: String) = {
+//  def findNameById(id: Long)(implicit connection:Connection):Opiton[String] = {
+//    SQL("SELECT * FROM User WHERE id = {id}").on("id"->id).as(SqlParser.str("name").singleOpt)
+//  }
+
+  def exists(name: String, password: String): Boolean = {
     db.withConnection { implicit c =>
-      val result = SQL(s"select * from users where name = $name AND password = $password").executeQuery()
+      SQL("select exists(select * from users where name = {name} and password = {password})")
+        .on('name -> name, 'password -> password)
+        .as(scalar[Boolean].single)
+//        SQL("select * from users where name = {name} AND password = {password}")
+//        .on('name -> name, 'password -> password).as(scalar[Boolean].single)
+//          .as(SqlParser.str("name").singleOpt)
 //      result.
 //      val user = List(query.map { row =>
 //        (row[String]("name"), row[String]("password"))
 //      })
 //      if (user.nonEmpty) true else false
     }
-    ???
+//    ???
   }
 }

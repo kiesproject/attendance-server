@@ -69,7 +69,6 @@ class HomeController @Inject()(db: DBAccess) extends Controller {
     }.getOrElse {
       BadRequest("Expecting Json data")
     }
-    ???
   }
 
   //  def insert(name: String, pass: String, admin: Boolean) = Action {
