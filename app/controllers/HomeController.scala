@@ -44,8 +44,12 @@ class HomeController @Inject()(db: DBAccess) extends Controller {
     request.body.asJson.map { json =>
       json.validate(rdsRegister).map {
         case (name, password, admin) =>
-          db.insert(name, password, admin)
-          Ok(s"register $name")
+          if (!db.exists(name)) {
+            db.insert(name, password, admin)
+            Ok(s"registered $name")
+          } else {
+            BadRequest(s"$name is already registered")
+          }
       }.recoverTotal {
         e => BadRequest("Detected error:" + JsError.toFlatJson(e))
       }

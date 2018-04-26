@@ -23,4 +23,12 @@ class DBAccess @Inject()(db: Database) {
         .as(scalar[Boolean].single)
     }
   }
+
+  def exists(name: String): Boolean = {
+    db.withConnection { implicit c =>
+      SQL("select exists(select * from users where name = {name})")
+        .on('name -> name)
+        .as(scalar[Boolean].single)
+    }
+  }
 }
