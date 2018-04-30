@@ -46,9 +46,11 @@ class HomeController @Inject()(db: DBAccess) extends Controller {
         case (name, password, admin) =>
           if (!db.exists(name)) {
             db.insert(name, password, admin)
-            Ok(s"registered $name")
+            val response = Map("message" -> s"registered $name")
+            Created(Json.toJson(response))
           } else {
-            BadRequest(s"$name is already registered")
+            val response = Map("code" -> JsNumber(409), "message" -> JsString(s"$name is already registered"))
+            Conflict(Json.toJson(response))
           }
       }.recoverTotal {
         e => BadRequest("Detected error:" + JsError.toFlatJson(e))
@@ -68,9 +70,11 @@ class HomeController @Inject()(db: DBAccess) extends Controller {
       json.validate(rdsLogin).map {
         case (name, password) =>
           if (db.exists(name, password)) {
-            Ok(s"login $name")
+            val response = Map("user" -> name)
+            Ok(Json.toJson(response))
           } else {
-            BadRequest("email or password is wrong")
+            val response = Map("code" -> JsNumber(404), "message" -> JsString("email or password is wrong"))
+            NotFound(Json.toJson(response))
           }
       }.recoverTotal {
         e => BadRequest("Detected error:" + JsError.toFlatJson(e))
