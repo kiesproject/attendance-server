@@ -33,7 +33,7 @@ class HomeController @Inject()(db: DBAccess) extends Controller {
     * a path of `/`.
     */
   def index = Action {
-    Ok("Hello~ hello~")
+    Ok("Welcome to sabran!!")
   }
 
   // user登録
