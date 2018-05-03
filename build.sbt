@@ -10,8 +10,9 @@ libraryDependencies ++= Seq(
   jdbc,
   cache,
   ws,
-  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test ,
+  "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1" % Test,
+  "org.mockito" % "mockito-all" % "1.10.19" % Test,
   "org.postgresql" % "postgresql" % "9.4-1201-jdbc41",
-  "com.typesafe.play" %% "anorm" % "2.5.2"
+  "org.playframework.anorm" %% "anorm" % "2.6.2"
 )
 
