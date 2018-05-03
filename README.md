@@ -64,8 +64,7 @@ localhostにHTTPリクエストする
 ``` json
 {
   "name" : "zumi",
-  "password" : "hoge",
-  "admin" : true
+  "password" : "hoge"
 }
 ```
 
