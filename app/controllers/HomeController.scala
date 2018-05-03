@@ -15,13 +15,13 @@ import play.api.libs.functional.syntax._
 class HomeController @Inject()(db: DBAccess) extends Controller {
 
   // POSTのbodyをパースする用
-  val rdsRegister: Reads[(String, String, Boolean)] = (
-      (__ \ 'name).read[String] and
-      (__ \ 'password).read[String] and
-      (__ \ 'admin).read[Boolean]
-    ) tupled
+//  val rdsRegister: Reads[(String, String, Boolean)] = (
+//      (__ \ 'name).read[String] and
+//      (__ \ 'password).read[String] and
+//      (__ \ 'admin).read[Boolean]
+//    ) tupled
 
-  val rdsLogin: Reads[(String, String)] = (
+  implicit val rds: Reads[(String, String)] = (
       (__ \ 'name).read[String] and
       (__ \ 'password).read[String]
     ) tupled
@@ -42,10 +42,10 @@ class HomeController @Inject()(db: DBAccess) extends Controller {
   // TODO: nameの重複チェックをして，重複していなかったら登録する，それ以外はエラーを返す
   def register = Action { request =>
     request.body.asJson.map { json =>
-      json.validate(rdsRegister).map {
-        case (name, password, admin) =>
+      json.validate.map {
+        case (name, password) =>
           if (!db.exists(name)) {
-            db.insert(name, password, admin)
+            db.insert(name, password)
             val response = Map("message" -> s"registered $name")
             Created(Json.toJson(response))
           } else {
@@ -67,7 +67,7 @@ class HomeController @Inject()(db: DBAccess) extends Controller {
     * あるならログインする
     * ないならログインできない，エラーを返す*/
     request.body.asJson.map { json =>
-      json.validate(rdsLogin).map {
+      json.validate.map {
         case (name, password) =>
           if (db.exists(name, password)) {
             val response = Map("user" -> name)

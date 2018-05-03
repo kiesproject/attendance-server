@@ -8,10 +8,10 @@ import anorm.SqlParser.scalar
 @Singleton
 class DBAccess @Inject()(db: Database) {
   // TODO: insert成功か失敗を返す(Either)
-  def insert(name: String, password: String, admin: Boolean) = {
+  def insert(name: String, password: String) = {
     db.withConnection { implicit c =>
       SQL("insert into users(name, password, admin) values({name}, {password}, {admin})")
-        .on('name -> name, 'password -> password, 'admin -> admin)
+        .on('name -> name, 'password -> password, 'admin -> false)
         .executeInsert()
     }
   }
