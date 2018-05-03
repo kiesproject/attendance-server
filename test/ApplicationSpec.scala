@@ -1,17 +1,19 @@
+import controllers.HomeController
+import models.DBAccess
+import org.mockito.Mockito._
+import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play._
 import play.api.libs.json.Json
 import play.api.test._
 import play.api.test.Helpers._
 
-import scala.util.{Failure, Success}
-import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
  * Add your spec here.
  * You can mock out a whole application including requests, plugins etc.
  * For more information, consult the wiki.
  */
-class ApplicationSpec extends PlaySpec with OneAppPerTest {
+class ApplicationSpec extends PlaySpec with OneAppPerTest with MockitoSugar {
 
   "Routes" should {
 
@@ -34,44 +36,54 @@ class ApplicationSpec extends PlaySpec with OneAppPerTest {
     "hoge" in {
       val name = "test3"
       val password = "test"
-      val admin = true
+//      val admin = true
+//      val input =
+//        s"""{
+//           |  "name":"$name",
+//           |  "password":"$password",
+//           |  "admin":$admin
+//           |}""".stripMargin
+//      val json = Json.parse(input)
+
+//      val req = route(app, FakeRequest(POST, "/register").withJsonBody(json)).get
+//      println("bbbbbbbbbbbb")
+
+      //TODO DBAccessもDatabaseをInjectしてるので，使用するDBもMockに差し替える
+      val m = mock[DBAccess]
+      when(m.exists(name)).thenReturn(true)
       val input =
         s"""{
            |  "name":"$name",
-           |  "password":"$password",
-           |  "admin":$admin
+           |  "password":"$password"
            |}""".stripMargin
       val json = Json.parse(input)
 
-      val req = route(app, FakeRequest(POST, "/register").withJsonBody(json)).get
-      println("bbbbbbbbbbbb")
+      val controller = new HomeController(m)
 
-      req onComplete  {
-        case Success(s) => {
-          println("aaa")
-          status(req) mustBe CREATED
-          contentAsJson(req) mustBe
-            s"""{
-               |  "message": "registered $name"
-               |}""".stripMargin
-        }
-        case Failure(t) => {
-          println("asss")
-          status(req) mustBe CONFLICT
-          contentAsJson(req) mustBe
-            s"""{
-               |  "code": 409, "message":
-               |  "$name is already registered"
-               |}""".stripMargin
-        }
-      }
+      val request = FakeRequest(POST, "/register").withJsonBody(json)
+      val actual = controller.register.apply(request)
+
+      status(actual) mustBe OK
+
+//      req onComplete  {
+//        case Success(s) => {
+//          println("aaa")
+//          status(req) mustBe CREATED
+//          contentAsJson(req) mustBe
+//            s"""{
+//               |  "message": "registered $name"
+//               |}""".stripMargin
+//        }
+//        case Failure(t) => {
+//          println("asss")
+//          status(req) mustBe CONFLICT
+//          contentAsJson(req) mustBe
+//            s"""{
+//               |  "code": 409, "message":
+//               |  "$name is already registered"
+//               |}""".stripMargin
+//        }
+//      }
     }
   }
 }
-
-/*req match {
-+      case Right(appNexusReq) => {
-+        appNexusReq.bcat should contain theSameElementsAs Seq("IAB23-7", "IAB23-5", "IAB23-10", "IAB23-9", "IAB23-1", "IAB7-44", "IAB9-9", "IAB8-18", "IAB8-5")
-+      }
-+      case Left(appNexusReq) => fail()
-+    }*/
