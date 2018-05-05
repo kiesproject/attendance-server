@@ -1,8 +1,7 @@
 package controllers
 
 import javax.inject._
-import models.DBAccess
-
+import models.{UserRepositoryOnPostgres, UserRepository}
 import play.api.mvc._
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
@@ -12,7 +11,7 @@ import play.api.libs.functional.syntax._
   * application's home page.
   */
 @Singleton
-class HomeController @Inject()(db: DBAccess) extends Controller {
+class HomeController @Inject()(userRepository: UserRepository) extends Controller {
 
   // POSTのbodyをパースする用
 //  val rdsRegister: Reads[(String, String, Boolean)] = (
@@ -44,8 +43,8 @@ class HomeController @Inject()(db: DBAccess) extends Controller {
     request.body.asJson.map { json =>
       json.validate.map {
         case (name, password) =>
-          if (!db.exists(name)) {
-            db.insert(name, password)
+          if (!userRepository.exists(name)) {
+            userRepository.insert(name, password)
             val response = Map("message" -> s"registered $name")
             Created(Json.toJson(response))
           } else {
@@ -69,7 +68,7 @@ class HomeController @Inject()(db: DBAccess) extends Controller {
     request.body.asJson.map { json =>
       json.validate.map {
         case (name, password) =>
-          if (db.exists(name, password)) {
+          if (userRepository.exists(name, password)) {
             val response = Map("user" -> name)
             Ok(Json.toJson(response))
           } else {

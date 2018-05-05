@@ -5,8 +5,14 @@ import play.api.db._
 import anorm._
 import anorm.SqlParser.scalar
 
+trait UserRepository {
+  def insert(name: String, password: String)
+  def exists(name: String, password: String): Boolean
+  def exists(name: String): Boolean
+}
+
 @Singleton
-class DBAccess @Inject()(db: Database) {
+class UserRepositoryOnPostgres @Inject()(db: Database) extends UserRepository {
   // TODO: insert成功か失敗を返す(Either)
   def insert(name: String, password: String) = {
     db.withConnection { implicit c =>
