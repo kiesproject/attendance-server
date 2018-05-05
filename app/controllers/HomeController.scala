@@ -39,9 +39,7 @@ class HomeController @Inject()(userRepository: UserRepository) extends Controlle
   }
 
   // user登録
-  // TODO: Logを吐かせましょう
   // TODO: SQL Exceptionをキャッチしてエラーの出し分けする．（文字数制限とか，重複とか，）
-  // TODO: nameの重複チェックをして，重複していなかったら登録する，それ以外はエラーを返す
   def register = Action { request =>
     request.body.asJson.map { json =>
       json.validate.map {
@@ -66,10 +64,6 @@ class HomeController @Inject()(userRepository: UserRepository) extends Controlle
 
   // userログイン
   def login = Action { request =>
-    /*bodyからnameを取得
-    * nameがDBにあるか調べる
-    * あるならログインする
-    * ないならログインできない，エラーを返す*/
     request.body.asJson.map { json =>
       json.validate.map {
         case (name, password) =>
