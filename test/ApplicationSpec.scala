@@ -1,14 +1,11 @@
-import java.sql.Connection
-
 import controllers.HomeController
-import models.{UserRepository, UserRepositoryOnPostgres}
+import models.UserRepository
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play._
 import play.api.libs.json.Json
-import play.api.test._
 import play.api.test.Helpers._
-import play.api.db.Database
+import play.api.test._
 
 
 /**
@@ -21,7 +18,7 @@ class ApplicationSpec extends PlaySpec with OneAppPerTest with MockitoSugar {
   "Routes" should {
 
     "send 404 on a bad request" in  {
-      route(app, FakeRequest(GET, "/boum")).map(status(_)) mustBe Some(NOT_FOUND)
+      route(app, FakeRequest(GET, "/boum")).map(status) mustBe Some(NOT_FOUND)
     }
 
   }

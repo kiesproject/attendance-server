@@ -1,10 +1,11 @@
 package controllers
 
 import javax.inject._
-import models.{UserRepositoryOnPostgres, UserRepository}
-import play.api.mvc._
-import play.api.libs.json._
+import models.UserRepository
+import play.api.Logger
 import play.api.libs.functional.syntax._
+import play.api.libs.json._
+import play.api.mvc._
 
 /**
   * This controller creates an `Action` to handle HTTP requests to the
@@ -24,6 +25,8 @@ class HomeController @Inject()(userRepository: UserRepository) extends Controlle
       (__ \ 'name).read[String] and
       (__ \ 'password).read[String]
     ) tupled
+
+  val logger = Logger.logger
 
   /**
     * Create an Action to render an HTML page with a welcome message.
@@ -46,9 +49,11 @@ class HomeController @Inject()(userRepository: UserRepository) extends Controlle
           if (!userRepository.exists(name)) {
             userRepository.insert(name, password)
             val response = Map("message" -> s"registered $name")
+            logger.info("SUCCESS: user created")
             Created(Json.toJson(response))
           } else {
             val response = Map("code" -> JsNumber(409), "message" -> JsString(s"$name is already registered"))
+            logger.debug("FAILURE: user not created")
             Conflict(Json.toJson(response))
           }
       }.recoverTotal {
@@ -70,9 +75,11 @@ class HomeController @Inject()(userRepository: UserRepository) extends Controlle
         case (name, password) =>
           if (userRepository.exists(name, password)) {
             val response = Map("user" -> name)
+            logger.debug("SUCCESS: user login")
             Ok(Json.toJson(response))
           } else {
             val response = Map("code" -> JsNumber(404), "message" -> JsString("email or password is wrong"))
+            logger.debug("FAILURE: user not login")
             NotFound(Json.toJson(response))
           }
       }.recoverTotal {
