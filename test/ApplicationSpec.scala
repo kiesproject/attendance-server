@@ -1,11 +1,14 @@
+import java.sql.Connection
+
 import controllers.HomeController
-import models.DBAccess
+import models.{UserRepository, UserRepositoryOnPostgres}
 import org.mockito.Mockito._
 import org.scalatest.mockito.MockitoSugar
 import org.scalatestplus.play._
 import play.api.libs.json.Json
 import play.api.test._
 import play.api.test.Helpers._
+import play.api.db.Database
 
 
 /**
@@ -47,32 +50,79 @@ class ApplicationSpec extends PlaySpec with OneAppPerTest with MockitoSugar {
            |}""".stripMargin
       val json = Json.parse(input)
 
-      val controller = new HomeController(m)
+      val controller = new HomeController(mockRepository)
+
+      val request = FakeRequest(POST, "/login").withJsonBody(json)
+      val actual = controller.login.apply(request)
+
+      status(actual) mustBe OK
+    }
+
+    "register success" in {
+      val name = "test"
+      val password = "test"
+
+      val mockRepository = mock[UserRepository]
+      when(mockRepository.exists(name)).thenReturn(false)
+
+      val input =
+        s"""{
+           |  "name":"$name",
+           |  "password":"$password"
+           |}""".stripMargin
+      val json = Json.parse(input)
+
+      val controller = new HomeController(mockRepository)
 
       val request = FakeRequest(POST, "/register").withJsonBody(json)
       val actual = controller.register.apply(request)
 
-      status(actual) mustBe OK
+      status(actual) mustBe CREATED
+    }
 
-//      req onComplete  {
-//        case Success(s) => {
-//          println("aaa")
-//          status(req) mustBe CREATED
-//          contentAsJson(req) mustBe
-//            s"""{
-//               |  "message": "registered $name"
-//               |}""".stripMargin
-//        }
-//        case Failure(t) => {
-//          println("asss")
-//          status(req) mustBe CONFLICT
-//          contentAsJson(req) mustBe
-//            s"""{
-//               |  "code": 409, "message":
-//               |  "$name is already registered"
-//               |}""".stripMargin
-//        }
-//      }
+
+    "login faild" in {
+      val name = "test"
+      val password = "test"
+
+      val mockRepository = mock[UserRepository]
+      when(mockRepository.exists(name, password)).thenReturn(false)
+
+      val input =
+        s"""{
+           |  "name":"$name",
+           |  "password":"$password"
+           |}""".stripMargin
+      val json = Json.parse(input)
+
+      val controller = new HomeController(mockRepository)
+
+      val request = FakeRequest(POST, "/login").withJsonBody(json)
+      val actual = controller.login.apply(request)
+
+      status(actual) mustBe NOT_FOUND
+    }
+
+    "register faild" in {
+      val name = "test"
+      val password = "test"
+
+      val mockRepository = mock[UserRepository]
+      when(mockRepository.exists(name)).thenReturn(true)
+
+      val input =
+        s"""{
+           |  "name":"$name",
+           |  "password":"$password"
+           |}""".stripMargin
+      val json = Json.parse(input)
+
+      val controller = new HomeController(mockRepository)
+
+      val request = FakeRequest(POST, "/register").withJsonBody(json)
+      val actual = controller.register.apply(request)
+
+      status(actual) mustBe CONFLICT
     }
   }
 }
