@@ -33,24 +33,13 @@ class ApplicationSpec extends PlaySpec with OneAppPerTest with MockitoSugar {
       contentAsString(home) must include ("Welcome to sabran")
     }
 
-    "hoge" in {
-      val name = "test3"
+    "login success" in {
+      val name = "test"
       val password = "test"
-//      val admin = true
-//      val input =
-//        s"""{
-//           |  "name":"$name",
-//           |  "password":"$password",
-//           |  "admin":$admin
-//           |}""".stripMargin
-//      val json = Json.parse(input)
 
-//      val req = route(app, FakeRequest(POST, "/register").withJsonBody(json)).get
-//      println("bbbbbbbbbbbb")
+      val mockRepository = mock[UserRepository]
+      when(mockRepository.exists(name, password)).thenReturn(true)
 
-      //TODO DBAccessもDatabaseをInjectしてるので，使用するDBもMockに差し替える
-      val m = mock[DBAccess]
-      when(m.exists(name)).thenReturn(true)
       val input =
         s"""{
            |  "name":"$name",
